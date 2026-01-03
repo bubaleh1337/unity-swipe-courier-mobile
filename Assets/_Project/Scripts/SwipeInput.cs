@@ -61,5 +61,7 @@ public class SwipeInput : MonoBehaviour
 
         if (delta.x > 0) laneMover.MoveRight();
         else laneMover.MoveLeft();
+        AudioManager.Instance?.PlaySwipe();
+
     }
 }

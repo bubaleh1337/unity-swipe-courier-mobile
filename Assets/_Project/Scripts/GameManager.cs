@@ -13,8 +13,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TMP_Text resultTitle;
     [SerializeField] private GameObject tapToStartText;
 
+
     [Header("Pause UI")]
     [SerializeField] private GameObject pausePanel;
+    [SerializeField] private GameObject pauseButton;
 
 
     [Header("Score")]
@@ -37,7 +39,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        Time.timeScale = 1f; // на всякий случай (после предыдущих запусков)
+        Time.timeScale = 0f; // на всякий случай (после предыдущих запусков)
 
         _timeLeft = roundDurationSeconds;
         _ended = false;
@@ -102,7 +104,9 @@ public class GameManager : MonoBehaviour
 
     public void StartRun()
     {
+        AudioManager.Instance?.PlayTapStart();
         IsRunning = true;
+        if (pauseButton != null) pauseButton.SetActive(true);
         if (tapToStartText != null) tapToStartText.SetActive(false);
         Time.timeScale = 1f;
     }
@@ -113,6 +117,7 @@ public class GameManager : MonoBehaviour
         _ended = true;
 
         IsRunning = false;     // важно
+        AudioManager.Instance?.PlayLose();
         ShowResult("YOU LOSE");
     }
 
@@ -122,6 +127,7 @@ public class GameManager : MonoBehaviour
         _ended = true;
 
         IsRunning = false;     // важно
+        AudioManager.Instance?.PlayWin();
         ShowResult("YOU WIN");
     }
 
