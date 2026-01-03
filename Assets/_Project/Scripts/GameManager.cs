@@ -13,6 +13,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TMP_Text resultTitle;
     [SerializeField] private GameObject tapToStartText;
 
+    [Header("Pause UI")]
+    [SerializeField] private GameObject pausePanel;
+
+
     [Header("Score")]
     [SerializeField] private TMP_Text scoreText;      // HUD Score
     [SerializeField] private TMP_Text finalScoreText; // ResultPanel Score
@@ -27,6 +31,7 @@ public class GameManager : MonoBehaviour
 
     private int _score;
     private float _scoreAcc;
+    public bool IsPaused { get; private set; }
 
     public bool IsRunning { get; private set; }
 
@@ -43,6 +48,11 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0f;
 
         if (resultPanel != null) resultPanel.SetActive(false);
+
+        if (pausePanel != null)
+            pausePanel.SetActive(false);
+
+        IsPaused = false;
 
         _score = 0;
         _scoreAcc = 0f;
@@ -117,6 +127,9 @@ public class GameManager : MonoBehaviour
 
     private void ShowResult(string title)
     {
+        IsPaused = false;
+        if (pausePanel != null) pausePanel.SetActive(false);
+
         Time.timeScale = 0f;
 
         if (resultTitle != null) resultTitle.text = title;
@@ -161,6 +174,32 @@ public class GameManager : MonoBehaviour
     {
         if (bestScoreText != null)
             bestScoreText.text = $"Best: {_bestScore}";
+    }
+    public void Pause()
+    {
+        if (_ended) return;               // если уже win/lose Ч пауза не нужна
+        if (!IsRunning) return;           // если ещЄ не стартовали Ч тоже не надо
+
+        IsPaused = true;
+        Time.timeScale = 0f;
+
+        if (pausePanel != null)
+            pausePanel.SetActive(true);
+    }
+
+    public void Resume()
+    {
+        IsPaused = false;
+        Time.timeScale = 1f;
+
+        if (pausePanel != null)
+            pausePanel.SetActive(false);
+    }
+
+    public void Quit()
+    {
+        // пока просто перезапускаем сцену (как "выход в меню" в будущем)
+        Retry();
     }
 
 }
