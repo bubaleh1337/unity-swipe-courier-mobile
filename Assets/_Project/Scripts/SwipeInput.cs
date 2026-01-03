@@ -16,6 +16,9 @@ public class SwipeInput : MonoBehaviour
 
     private void Update()
     {
+        var gm = FindObjectOfType<GameManager>();
+        if (gm != null && !gm.IsRunning) return;
+
         // Поддержка и мыши (для теста в Editor), и тача (на телефоне)
         if (Input.GetMouseButtonDown(0))
         {

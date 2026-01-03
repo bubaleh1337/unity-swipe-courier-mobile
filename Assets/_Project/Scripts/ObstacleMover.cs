@@ -16,6 +16,9 @@ public class ObstacleMover : MonoBehaviour
 
     private void Update()
     {
+        var gm = FindObjectOfType<GameManager>();
+        if (gm != null && !gm.IsRunning) return;
+
         transform.position += Vector3.back * (speed * Time.deltaTime);
 
         if (transform.position.z < destroyZ)

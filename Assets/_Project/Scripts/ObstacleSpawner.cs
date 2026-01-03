@@ -23,6 +23,8 @@ public class ObstacleSpawner : MonoBehaviour
     [SerializeField] private float difficultyRamp = 0.03f;
 
     private float _timer;
+    private GameManager _gm;
+
 
     // fair spawn
     private int _lastLane = -1;
@@ -31,6 +33,8 @@ public class ObstacleSpawner : MonoBehaviour
     private void Start()
     {
         _timer = -startDelay;
+        _gm = FindObjectOfType<GameManager>();
+
 
         if (pool == null)
             pool = FindObjectOfType<ObstaclePool>();
@@ -39,6 +43,7 @@ public class ObstacleSpawner : MonoBehaviour
     private void Update()
     {
         if (pool == null) return; // <- теперь провер€ем pool
+        if (_gm != null && !_gm.IsRunning) return;
 
         // ѕлавно усложн€ем игру со временем
         spawnInterval = Mathf.Max(minSpawnInterval, spawnInterval - Time.deltaTime * difficultyRamp);

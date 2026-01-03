@@ -13,16 +13,21 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TMP_Text resultTitle;
     [SerializeField] private TMP_Text scoreText;
 
+    [SerializeField] private GameObject tapToStartText;
 
     private float _timeLeft;
     private bool _ended;
     private float _score;
+    public bool IsRunning { get; private set; }
+
 
 
     private void Start()
     {
         _timeLeft = roundDurationSeconds;
         _ended = false;
+        IsRunning = false;
+        tapToStartText.gameObject.SetActive(true);
 
         if (resultPanel != null)
             resultPanel.SetActive(false);
@@ -35,6 +40,14 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        if (!IsRunning)
+        {
+            if (Input.GetMouseButtonDown(0) || Input.touchCount > 0)
+                StartRun();
+
+            return;
+        }
+
         if (_ended) return;
 
         _timeLeft -= Time.deltaTime;
@@ -94,6 +107,11 @@ public class GameManager : MonoBehaviour
     {
         if (scoreText == null) return;
         scoreText.text = $"Score: {Mathf.FloorToInt(_score)}";
+    }
+    public void StartRun()
+    {
+        IsRunning = true;
+        if (tapToStartText != null) tapToStartText.SetActive(false);
     }
 
 }
