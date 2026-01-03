@@ -31,6 +31,7 @@ public class ObstacleSpawner : MonoBehaviour
     // fair spawn
     private int _lastLane = -1;
     private int _sameLaneStreak = 0;
+    public float CurrentSpeed => obstacleSpeed;
 
     private void Start()
     {
