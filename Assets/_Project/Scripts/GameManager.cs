@@ -17,6 +17,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TMP_Text scoreText;      // HUD Score
     [SerializeField] private TMP_Text finalScoreText; // ResultPanel Score
     [SerializeField] private float scorePerSecond = 10f;
+    [SerializeField] private TMP_Text bestScoreText; // ResultPanel Best: 0
+    private int _bestScore;
+    private const string BestScoreKey = "BEST_SCORE";
+
 
     private float _timeLeft;
     private bool _ended;
@@ -43,6 +47,9 @@ public class GameManager : MonoBehaviour
 
         UpdateTimerUI();
         UpdateScoreUI();
+
+        _bestScore = PlayerPrefs.GetInt(BestScoreKey, 0);
+        UpdateBestScoreUI();
     }
 
     private void Update()
@@ -112,6 +119,16 @@ public class GameManager : MonoBehaviour
         if (resultTitle != null) resultTitle.text = title;
         UpdateScoreUI();
 
+        // обновляем рекорд
+        if (_score > _bestScore)
+        {
+            _bestScore = _score;
+            PlayerPrefs.SetInt(BestScoreKey, _bestScore);
+            PlayerPrefs.Save();
+        }
+        UpdateBestScoreUI();
+
+
         if (resultPanel != null) resultPanel.SetActive(true);
     }
 
@@ -137,4 +154,10 @@ public class GameManager : MonoBehaviour
         if (scoreText != null) scoreText.text = $"Score: {_score}";
         if (finalScoreText != null) finalScoreText.text = $"Score: {_score}";
     }
+    private void UpdateBestScoreUI()
+    {
+        if (bestScoreText != null)
+            bestScoreText.text = $"Best: {_bestScore}";
+    }
+
 }
