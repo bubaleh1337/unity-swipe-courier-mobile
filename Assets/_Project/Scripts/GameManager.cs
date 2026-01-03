@@ -40,6 +40,8 @@ public class GameManager : MonoBehaviour
         IsRunning = false;
         if (tapToStartText != null) tapToStartText.SetActive(true);
 
+        Time.timeScale = 0f;
+
         if (resultPanel != null) resultPanel.SetActive(false);
 
         _score = 0;
@@ -92,6 +94,7 @@ public class GameManager : MonoBehaviour
     {
         IsRunning = true;
         if (tapToStartText != null) tapToStartText.SetActive(false);
+        Time.timeScale = 1f;
     }
 
     public void Lose()

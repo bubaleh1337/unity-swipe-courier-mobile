@@ -7,15 +7,18 @@ public class SwipeInput : MonoBehaviour
 
     private Vector2 _startPos;
     private bool _isSwiping;
+    private GameManager _gm;
 
     private void Awake()
     {
+        _gm = FindObjectOfType<GameManager>();
         if (laneMover == null)
             laneMover = FindObjectOfType<LaneMover>();
     }
 
     private void Update()
     {
+        if (_gm != null && !_gm.IsRunning) return;
         var gm = FindObjectOfType<GameManager>();
         if (gm != null && !gm.IsRunning) return;
 
