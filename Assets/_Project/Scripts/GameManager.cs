@@ -24,6 +24,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TMP_Text finalScoreText; // ResultPanel Score
     [SerializeField] private float scorePerSecond = 10f;
     [SerializeField] private TMP_Text bestScoreText; // ResultPanel Best: 0
+
+    [Header("Difficulty")]
+    [SerializeField] private DifficultyController difficulty;
+
     private int _bestScore;
     private const string BestScoreKey = "BEST_SCORE";
 
@@ -64,6 +68,9 @@ public class GameManager : MonoBehaviour
 
         _bestScore = PlayerPrefs.GetInt(BestScoreKey, 0);
         UpdateBestScoreUI();
+        if (difficulty == null) difficulty = FindObjectOfType<DifficultyController>();
+        if (difficulty != null) difficulty.ResetValues();
+
     }
 
     private void Update()
@@ -92,7 +99,9 @@ public class GameManager : MonoBehaviour
         UpdateTimerUI();
 
         // —чЄт (за выживание)
-        _scoreAcc += scorePerSecond * Time.deltaTime;
+        float sps = (difficulty != null) ? difficulty.ScorePerSecond : scorePerSecond;
+        _scoreAcc += sps * Time.deltaTime;
+
         int newScore = Mathf.FloorToInt(_scoreAcc);
 
         if (newScore != _score)

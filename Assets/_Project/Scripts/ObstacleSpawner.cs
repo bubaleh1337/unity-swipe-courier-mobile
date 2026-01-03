@@ -21,6 +21,8 @@ public class ObstacleSpawner : MonoBehaviour
     [SerializeField] private float minSpawnInterval = 0.55f;
     [SerializeField] private float maxObstacleSpeed = 16f;
     [SerializeField] private float difficultyRamp = 0.03f;
+    [SerializeField] private DifficultyController difficulty;
+
 
     private float _timer;
     private GameManager _gm;
@@ -35,6 +37,7 @@ public class ObstacleSpawner : MonoBehaviour
         _timer = -startDelay;
         _gm = FindObjectOfType<GameManager>();
 
+        if (difficulty == null) difficulty = FindObjectOfType<DifficultyController>();
 
         if (pool == null)
             pool = FindObjectOfType<ObstaclePool>();
@@ -46,8 +49,11 @@ public class ObstacleSpawner : MonoBehaviour
         if (_gm != null && !_gm.IsRunning) return;
 
         // Плавно усложняем игру со временем
-        spawnInterval = Mathf.Max(minSpawnInterval, spawnInterval - Time.deltaTime * difficultyRamp);
-        obstacleSpeed = Mathf.Min(maxObstacleSpeed, obstacleSpeed + Time.deltaTime * (difficultyRamp * 10f));
+        if (difficulty != null)
+        {
+            spawnInterval = difficulty.SpawnInterval;
+            obstacleSpeed = difficulty.ObstacleSpeed;
+        }
 
         _timer += Time.deltaTime;
         if (_timer >= spawnInterval)

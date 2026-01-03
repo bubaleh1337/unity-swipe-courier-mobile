@@ -504,6 +504,7 @@ MonoBehaviour:
   minSpawnInterval: 0.55
   maxObstacleSpeed: 16
   difficultyRamp: 0.03
+  difficulty: {fileID: 0}
 --- !u!1 &175365921
 GameObject:
   m_ObjectHideFlags: 0
@@ -1474,6 +1475,7 @@ MonoBehaviour:
   finalScoreText: {fileID: 423505471}
   scorePerSecond: 5
   bestScoreText: {fileID: 2045234416}
+  difficulty: {fileID: 665570790}
 --- !u!4 &531137923
 Transform:
   m_ObjectHideFlags: 0
@@ -1565,8 +1567,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  tiltAngle: 12
-  tiltReturnSpeed: 16
+  tiltAngle: 20
+  tiltReturnSpeed: 10
 --- !u!54 &541032180
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1679,6 +1681,58 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fe65d77f96b33d46af32527af83ae3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &665570789
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 665570791}
+  - component: {fileID: 665570790}
+  m_Layer: 0
+  m_Name: DifficultyController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &665570790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 665570789}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a2c9f59a8e601c45bf9547ebbd9ac03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rampPerSecond: 0.03
+  maxDifficulty: 1
+  startSpawnInterval: 1
+  minSpawnInterval: 0.55
+  startObstacleSpeed: 10
+  maxObstacleSpeed: 16
+  startScorePerSecond: 5
+  maxScorePerSecond: 9
+--- !u!4 &665570791
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 665570789}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 613.59607, y: 258.8104, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &894052734
 GameObject:
   m_ObjectHideFlags: 0
@@ -4039,3 +4093,4 @@ SceneRoots:
   - {fileID: 1226992153}
   - {fileID: 531137923}
   - {fileID: 51986516}
+  - {fileID: 665570791}
