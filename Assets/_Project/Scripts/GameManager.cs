@@ -11,9 +11,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TMP_Text timerText;
     [SerializeField] private GameObject resultPanel;
     [SerializeField] private TMP_Text resultTitle;
+    [SerializeField] private TMP_Text scoreText;
+
 
     private float _timeLeft;
     private bool _ended;
+    private float _score;
+
 
     private void Start()
     {
@@ -24,6 +28,9 @@ public class GameManager : MonoBehaviour
             resultPanel.SetActive(false);
 
         UpdateTimerUI();
+        _score = 0f;
+        UpdateScoreUI();
+
     }
 
     private void Update()
@@ -38,6 +45,9 @@ public class GameManager : MonoBehaviour
         }
 
         UpdateTimerUI();
+        _score += Time.deltaTime * 10f; // 10 очков в секунду
+        UpdateScoreUI();
+
     }
 
     private void UpdateTimerUI()
@@ -80,4 +90,10 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
+    private void UpdateScoreUI()
+    {
+        if (scoreText == null) return;
+        scoreText.text = $"Score: {Mathf.FloorToInt(_score)}";
+    }
+
 }
