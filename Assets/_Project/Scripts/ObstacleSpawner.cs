@@ -2,16 +2,16 @@ using UnityEngine;
 
 public class ObstacleSpawner : MonoBehaviour
 {
-    [Header("Prefab")]
-    [SerializeField] private GameObject obstaclePrefab;
+    [Header("Pool")]
+    [SerializeField] private ObstaclePool pool;
 
     [Header("Lanes")]
-    [SerializeField] private float laneOffset = 2f; // должно совпадать с LaneMover
+    [SerializeField] private float laneOffset = 2f;
     [SerializeField] private int laneCount = 3;
 
     [Header("Spawn")]
-    [SerializeField] private float spawnZ = 18f;            // где появляются препятствия
-    [SerializeField] private float spawnInterval = 1.0f;    // раз в N секунд
+    [SerializeField] private float spawnZ = 18f;
+    [SerializeField] private float spawnInterval = 1.0f;
     [SerializeField] private float startDelay = 1.0f;
 
     [Header("Movement")]
@@ -20,7 +20,7 @@ public class ObstacleSpawner : MonoBehaviour
     [Header("Difficulty")]
     [SerializeField] private float minSpawnInterval = 0.55f;
     [SerializeField] private float maxObstacleSpeed = 16f;
-    [SerializeField] private float difficultyRamp = 0.03f; // скорость роста сложности
+    [SerializeField] private float difficultyRamp = 0.03f;
 
     private float _timer;
 
@@ -31,10 +31,15 @@ public class ObstacleSpawner : MonoBehaviour
     private void Start()
     {
         _timer = -startDelay;
+
+        if (pool == null)
+            pool = FindObjectOfType<ObstaclePool>();
     }
 
     private void Update()
     {
+        if (pool == null) return; // <- теперь проверяем pool
+
         // Плавно усложняем игру со временем
         spawnInterval = Mathf.Max(minSpawnInterval, spawnInterval - Time.deltaTime * difficultyRamp);
         obstacleSpeed = Mathf.Min(maxObstacleSpeed, obstacleSpeed + Time.deltaTime * (difficultyRamp * 10f));
@@ -49,8 +54,6 @@ public class ObstacleSpawner : MonoBehaviour
 
     private void Spawn()
     {
-        if (obstaclePrefab == null) return;
-
         // 1) выбрать полосу "честно"
         int laneIndex = Random.Range(0, laneCount);
 
@@ -59,7 +62,6 @@ public class ObstacleSpawner : MonoBehaviour
             _sameLaneStreak++;
             if (_sameLaneStreak >= 3)
             {
-                // насильно выберем другую полосу
                 laneIndex = (laneIndex + Random.Range(1, laneCount)) % laneCount;
                 _sameLaneStreak = 0;
             }
@@ -72,16 +74,16 @@ public class ObstacleSpawner : MonoBehaviour
         _lastLane = laneIndex;
 
         // 2) посчитать X по полосам
-        int centerIndex = (laneCount - 1) / 2;          // для 3 полос = 1
+        int centerIndex = (laneCount - 1) / 2; // для 3 полос = 1
         float x = (laneIndex - centerIndex) * laneOffset;
 
-        // 3) создать препятствие
+        // 3) взять объект из пула
         Vector3 pos = new Vector3(x, 0.5f, spawnZ);
-        GameObject go = Instantiate(obstaclePrefab, pos, Quaternion.identity);
+        var mover = pool.Get();
+        mover.transform.position = pos;
+        mover.transform.rotation = Quaternion.identity;
 
-        // 4) задать скорость движения препятствия
-        var mover = go.GetComponent<ObstacleMover>();
-        if (mover == null) mover = go.AddComponent<ObstacleMover>();
-        mover.speed = obstacleSpeed;
+        // 4) инициализировать скорость и привязку к пулу
+        mover.Init(pool, obstacleSpeed);
     }
 }
