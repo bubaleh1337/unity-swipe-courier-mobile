@@ -28,6 +28,13 @@ public class GameManager : MonoBehaviour
     [Header("Difficulty")]
     [SerializeField] private DifficultyController difficulty;
 
+    [Header("Courier")]
+    [SerializeField] private int requiredPackages = 3;
+    [SerializeField] private TMP_Text packagesText;     // HUD Packages: 0/3
+    [SerializeField] private TMP_Text moneyText;        // HUD Money: 0
+    [SerializeField] private TMP_Text finalMoneyText;   // ResultPanel Money: 0 (опционально)
+    [SerializeField] private int moneyRewardOnWin = 50;
+
     private int _bestScore;
     private const string BestScoreKey = "BEST_SCORE";
 
@@ -40,6 +47,9 @@ public class GameManager : MonoBehaviour
     public bool IsPaused { get; private set; }
 
     public bool IsRunning { get; private set; }
+
+    private int _packagesCollected;
+    private int _money;
 
     private void Start()
     {
@@ -71,6 +81,12 @@ public class GameManager : MonoBehaviour
         if (difficulty == null) difficulty = FindObjectOfType<DifficultyController>();
         if (difficulty != null) difficulty.ResetValues();
 
+        _packagesCollected = 0;
+        _money = PlayerPrefs.GetInt("Money", 0);
+
+        UpdatePackagesUI();
+        UpdateMoneyUI();
+
     }
 
     private void Update()
@@ -92,9 +108,15 @@ public class GameManager : MonoBehaviour
         if (_timeLeft <= 0f)
         {
             _timeLeft = 0f;
-            Win();
+
+            if (_packagesCollected >= requiredPackages)
+                Win();
+            else
+                Lose();
+
             return;
         }
+
 
         UpdateTimerUI();
 
@@ -137,6 +159,10 @@ public class GameManager : MonoBehaviour
 
         IsRunning = false;     // важно
         AudioManager.Instance?.PlayWin();
+        _money += moneyRewardOnWin;
+        PlayerPrefs.SetInt("Money", _money);
+        PlayerPrefs.Save();
+        UpdateMoneyUI();
         ShowResult("YOU WIN");
     }
 
@@ -190,6 +216,21 @@ public class GameManager : MonoBehaviour
         if (bestScoreText != null)
             bestScoreText.text = $"Best: {_bestScore}";
     }
+    private void UpdatePackagesUI()
+    {
+        if (packagesText != null)
+            packagesText.text = $"Packages: {_packagesCollected}/{requiredPackages}";
+    }
+
+    private void UpdateMoneyUI()
+    {
+        if (moneyText != null)
+            moneyText.text = $"Money: {_money}";
+
+        if (finalMoneyText != null)
+            finalMoneyText.text = $"Money: {_money}";
+    }
+
     public void Pause()
     {
         if (_ended) return;               // если уже win/lose — пауза не нужна
@@ -215,6 +256,17 @@ public class GameManager : MonoBehaviour
     {
         // пока просто перезапускаем сцену (как "выход в меню" в будущем)
         Retry();
+    }
+    public void AddPackage()
+    {
+        if (_ended) return;
+        if (!IsRunning) return; // чтобы до старта не считалось
+
+        _packagesCollected++;
+        if (_packagesCollected > requiredPackages)
+            _packagesCollected = requiredPackages;
+
+        UpdatePackagesUI();
     }
 
 }
