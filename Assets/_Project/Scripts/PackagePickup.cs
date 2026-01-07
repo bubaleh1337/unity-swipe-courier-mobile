@@ -18,7 +18,7 @@ public class PackagePickup : MonoBehaviour
         if (!other.CompareTag(playerTag)) return;
 
         if (_gm != null)
-            _gm.AddPackage();
+            _gm.OnPackageCollected();
 
         if (_pool != null)
             _pool.Return(gameObject);

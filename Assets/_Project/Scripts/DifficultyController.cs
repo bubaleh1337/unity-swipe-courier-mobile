@@ -4,7 +4,7 @@ public class DifficultyController : MonoBehaviour
 {
     [Header("Difficulty")]
     [SerializeField] private float rampPerSecond = 0.03f;   // скорость роста сложности
-    [SerializeField] private float maxDifficulty = 1.0f;    // 0..1
+    //[SerializeField] private float maxDifficulty = 1.0f;    // 0..1
 
     [Header("Spawn Interval")]
     [SerializeField] private float startSpawnInterval = 1.0f;

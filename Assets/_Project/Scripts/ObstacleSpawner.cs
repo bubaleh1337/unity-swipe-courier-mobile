@@ -18,9 +18,9 @@ public class ObstacleSpawner : MonoBehaviour
     [SerializeField] private float obstacleSpeed = 10f;
 
     [Header("Difficulty")]
-    [SerializeField] private float minSpawnInterval = 0.55f;
-    [SerializeField] private float maxObstacleSpeed = 16f;
-    [SerializeField] private float difficultyRamp = 0.03f;
+    //[SerializeField] private float minSpawnInterval = 0.55f;
+    //[SerializeField] private float maxObstacleSpeed = 16f;
+    //[SerializeField] private float difficultyRamp = 0.03f;
     [SerializeField] private DifficultyController difficulty;
 
 
