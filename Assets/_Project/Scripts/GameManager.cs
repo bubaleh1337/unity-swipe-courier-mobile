@@ -1,4 +1,3 @@
-using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -11,8 +10,8 @@ public class GameManager : MonoBehaviour
     [Header("UI - HUD")]
     [SerializeField] private TMP_Text timerText;
     [SerializeField] private TMP_Text scoreText;       // HUD "Score: X"
-    [SerializeField] private TMP_Text packagesText;    // HUD "Packages: X/Y" (если есть)
-    [SerializeField] private TMP_Text moneyText;       // HUD "Money: X" (если есть)
+    [SerializeField] private TMP_Text packagesText;    // HUD "Packages: X"
+    [SerializeField] private TMP_Text moneyText;       // HUD "Money: X"
     [SerializeField] private TMP_Text orderText;       // HUD "Order: X/Y"
     [SerializeField] private GameObject tapToStartText;
 
@@ -26,8 +25,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject pausePanel;
 
     [Header("UI - Delivery Toast")]
-    [SerializeField] private GameObject deliveryToast;     // Canvas/DeliveryToast
-    [SerializeField] private TMP_Text deliveryToastText;   // DeliveryToast/Text (TMP)
+    [SerializeField] private DeliveryToastUI deliveryToastUI;
 
     [Header("Score")]
     [SerializeField] private float scorePerSecond = 2f;
@@ -35,7 +33,6 @@ public class GameManager : MonoBehaviour
     [Header("Order / Delivery")]
     [SerializeField] private int orderTarget = 3;      // сколько пакетов нужно дл€ УдоставкиФ
     [SerializeField] private int rewardMoney = 50;     // награда за доставку
-    [SerializeField] private float toastDuration = 1.0f;
 
     private float _timeLeft;
     private bool _ended;
@@ -51,11 +48,8 @@ public class GameManager : MonoBehaviour
 
     private int _bestScore;
 
-    private Coroutine _toastRoutine;
-
     private bool _paused;
     public bool IsPaused => _paused;
-
 
     private void Start()
     {
@@ -69,7 +63,7 @@ public class GameManager : MonoBehaviour
 
         if (resultPanel != null) resultPanel.SetActive(false);
         if (pausePanel != null) pausePanel.SetActive(false);
-        if (deliveryToast != null) deliveryToast.SetActive(false);
+        if (deliveryToastUI != null) deliveryToastUI.HideImmediate();
 
         _score = 0;
         _scoreAcc = 0f;
@@ -90,6 +84,7 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         if (_ended) return;
+        if (_paused) return;
 
         if (!IsRunning)
         {
@@ -199,12 +194,11 @@ public class GameManager : MonoBehaviour
     // =========================
     // PUBLIC API for pickups
     // =========================
-
-    // вызывать при подборе одного Package
     public void OnPackageCollected()
     {
         if (_ended) return;
         if (!IsRunning) return;
+        if (_paused) return;
 
         _packages++;
         _orderCollected++;
@@ -221,40 +215,18 @@ public class GameManager : MonoBehaviour
             UpdateEconomyUI();
             UpdateOrderUI();
 
-            ShowDeliveryToast($"+${rewardMoney} DELIVERY COMPLETE");
+            if (deliveryToastUI != null)
+                deliveryToastUI.Show($"+${rewardMoney} DELIVERY COMPLETE");
         }
     }
 
-    private void ShowDeliveryToast(string message)
-    {
-        if (deliveryToast == null || deliveryToastText == null) return;
-
-        if (_toastRoutine != null)
-            StopCoroutine(_toastRoutine);
-
-        _toastRoutine = StartCoroutine(ToastRoutine(message));
-    }
-
-    private IEnumerator ToastRoutine(string message)
-    {
-        deliveryToastText.text = message;
-        deliveryToast.SetActive(true);
-
-        float t = 0f;
-        while (t < toastDuration)
-        {
-            t += Time.unscaledDeltaTime; // важно: работает даже если Time.timeScale = 0
-            yield return null;
-        }
-
-        deliveryToast.SetActive(false);
-        _toastRoutine = null;
-    }
-
+    // =========================
+    // Pause
+    // =========================
     public void Pause()
     {
-        if (_ended) return;          // если уже конец игры Ч пауза не нужна
-        if (!IsRunning) return;      // если ещЄ не стартовали Ч тоже
+        if (_ended) return;
+        if (!IsRunning) return;
         if (_paused) return;
 
         _paused = true;
@@ -263,6 +235,7 @@ public class GameManager : MonoBehaviour
         if (pausePanel != null)
             pausePanel.SetActive(true);
     }
+
     public void Resume()
     {
         if (!_paused) return;
@@ -273,5 +246,4 @@ public class GameManager : MonoBehaviour
         if (pausePanel != null)
             pausePanel.SetActive(false);
     }
-
 }

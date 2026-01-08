@@ -17,9 +17,16 @@ public class PackagePickup : MonoBehaviour
     {
         if (!other.CompareTag(playerTag)) return;
 
+        // 1) логика подбора (успешный момент)
         if (_gm != null)
             _gm.OnPackageCollected();
 
+        // 2) pop feedback (если компонент есть Ч попаем)
+        var pop = other.GetComponent<PlayerPopFeedback>();
+        if (pop == null) pop = other.GetComponentInChildren<PlayerPopFeedback>();
+        if (pop != null) pop.Pop();
+
+        // 3) вернуть в пул
         if (_pool != null)
             _pool.Return(gameObject);
         else
