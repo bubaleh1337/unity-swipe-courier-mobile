@@ -27,6 +27,11 @@ public class GameManager : MonoBehaviour
     [Header("UI - Delivery Toast")]
     [SerializeField] private DeliveryToastUI deliveryToastUI;
 
+    [Header("UI - Feedback (punch)")]
+    [SerializeField] private UIPunch packagesPunch;
+    [SerializeField] private UIPunch orderPunch;
+    [SerializeField] private UIPunch moneyPunch;
+
     [Header("Score")]
     [SerializeField] private float scorePerSecond = 2f;
 
@@ -79,6 +84,9 @@ public class GameManager : MonoBehaviour
         UpdateEconomyUI();
         UpdateOrderUI();
         UpdateBestUI();
+        if (deliveryToastUI != null)
+            deliveryToastUI.HideImmediate();
+
     }
 
     private void Update()
@@ -198,13 +206,16 @@ public class GameManager : MonoBehaviour
     {
         if (_ended) return;
         if (!IsRunning) return;
-        if (_paused) return;
 
         _packages++;
         _orderCollected++;
 
         UpdateEconomyUI();
         UpdateOrderUI();
+
+        // POP feedback on pickup
+        if (packagesPunch != null) packagesPunch.Punch();
+        if (orderPunch != null) orderPunch.Punch();
 
         // если заказ выполнен
         if (_orderCollected >= orderTarget)
@@ -215,10 +226,15 @@ public class GameManager : MonoBehaviour
             UpdateEconomyUI();
             UpdateOrderUI();
 
+            // POP feedback on reward
+            if (moneyPunch != null) moneyPunch.Punch();
+
+            // Animated toast (unscaled)
             if (deliveryToastUI != null)
                 deliveryToastUI.Show($"+${rewardMoney} DELIVERY COMPLETE");
         }
     }
+
 
     // =========================
     // Pause

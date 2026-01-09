@@ -4,114 +4,111 @@ using UnityEngine;
 
 public class DeliveryToastUI : MonoBehaviour
 {
-    [Header("Refs")]
-    [SerializeField] private RectTransform panel;
-    [SerializeField] private CanvasGroup group;
-    [SerializeField] private TMP_Text text;
+    [Header("References")]
+    [SerializeField] private CanvasGroup canvasGroup;
+    [SerializeField] private RectTransform panel;   // RectTransform на DeliveryToast
+    [SerializeField] private TMP_Text label;        // TMP Text внутри
 
-    [Header("Timings (seconds)")]
-    [SerializeField] private float fadeIn = 0.12f;
-    [SerializeField] private float hold = 0.55f;
-    [SerializeField] private float fadeOut = 0.18f;
+    [Header("Timing (unscaled)")]
+    [SerializeField] private float enterDuration = 0.12f;
+    [SerializeField] private float stayDuration = 0.90f;
+    [SerializeField] private float exitDuration = 0.18f;
 
-    [Header("Motion / Scale")]
-    [SerializeField] private float startScale = 0.92f;
-    [SerializeField] private float endScale = 1.00f;
-    [SerializeField] private float startYOffset = 10f;
-    [SerializeField] private float endYOffset = 0f;
+    [Header("Motion")]
+    [SerializeField] private Vector2 hiddenOffset = new Vector2(0f, 40f);
+    [SerializeField] private float startScale = 0.96f;
 
     private Coroutine _routine;
-    private Vector2 _basePos;
+    private Vector2 _shownPos;
+    private Vector2 _hiddenPos;
 
     private void Awake()
     {
+        if (canvasGroup == null) canvasGroup = GetComponent<CanvasGroup>();
         if (panel == null) panel = GetComponent<RectTransform>();
-        if (group == null) group = GetComponent<CanvasGroup>();
-        if (text == null) text = GetComponentInChildren<TMP_Text>(true);
 
-        _basePos = panel.anchoredPosition;
+        _shownPos = panel.anchoredPosition;
+        _hiddenPos = _shownPos + hiddenOffset;
+
         HideImmediate();
     }
 
     public void HideImmediate()
     {
-        if (_routine != null)
-        {
-            StopCoroutine(_routine);
-            _routine = null;
-        }
-
-        if (group != null) group.alpha = 0f;
-        if (panel != null)
-        {
-            panel.localScale = Vector3.one;
-            panel.anchoredPosition = _basePos;
-        }
-
-        gameObject.SetActive(false);
+        ApplyState(0f);
     }
 
     public void Show(string message)
     {
-        if (text != null) text.text = message;
+        if (label != null)
+            label.text = message;
 
-        gameObject.SetActive(true);
+        if (_routine != null)
+            StopCoroutine(_routine);
 
-        if (_routine != null) StopCoroutine(_routine);
-        _routine = StartCoroutine(PlayRoutine());
+        _routine = StartCoroutine(ShowRoutine());
     }
 
-    private IEnumerator PlayRoutine()
+    private IEnumerator ShowRoutine()
     {
-        // стартовые значения
-        group.alpha = 0f;
-        panel.localScale = Vector3.one * startScale;
-        panel.anchoredPosition = _basePos + new Vector2(0f, startYOffset);
-
-        // fade in + pop
+        // ENTER
         float t = 0f;
-        while (t < fadeIn)
+        while (t < enterDuration)
         {
             t += Time.unscaledDeltaTime;
-            float k = Mathf.Clamp01(t / fadeIn);
-
-            group.alpha = k;
-            panel.localScale = Vector3.one * Mathf.Lerp(startScale, endScale, EaseOutCubic(k));
-            panel.anchoredPosition = Vector2.Lerp(_basePos + new Vector2(0f, startYOffset), _basePos + new Vector2(0f, endYOffset), EaseOutCubic(k));
-
+            float k = Mathf.Clamp01(t / enterDuration);
+            ApplyState(EaseOutCubic(k));
             yield return null;
         }
+        ApplyState(1f);
 
-        group.alpha = 1f;
-        panel.localScale = Vector3.one * endScale;
-        panel.anchoredPosition = _basePos + new Vector2(0f, endYOffset);
-
-        // hold
-        float h = 0f;
-        while (h < hold)
+        // STAY
+        float s = 0f;
+        while (s < stayDuration)
         {
-            h += Time.unscaledDeltaTime;
+            s += Time.unscaledDeltaTime;
             yield return null;
         }
 
-        // fade out
-        float o = 0f;
-        while (o < fadeOut)
+        // EXIT
+        t = 0f;
+        while (t < exitDuration)
         {
-            o += Time.unscaledDeltaTime;
-            float k = Mathf.Clamp01(o / fadeOut);
-            group.alpha = 1f - k;
+            t += Time.unscaledDeltaTime;
+            float k = Mathf.Clamp01(t / exitDuration);
+            ApplyState(1f - EaseInCubic(k));
             yield return null;
         }
+        ApplyState(0f);
 
-        group.alpha = 0f;
-        gameObject.SetActive(false);
         _routine = null;
     }
 
-    private float EaseOutCubic(float x)
+    private void ApplyState(float a)
     {
-        x = Mathf.Clamp01(x);
+        if (canvasGroup != null)
+        {
+            canvasGroup.alpha = a;
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
+        }
+
+        if (panel != null)
+        {
+            panel.anchoredPosition = Vector2.Lerp(_hiddenPos, _shownPos, a);
+
+            float sc = Mathf.Lerp(startScale, 1f, a);
+            panel.localScale = new Vector3(sc, sc, sc);
+        }
+    }
+
+    private static float EaseOutCubic(float x)
+    {
         return 1f - Mathf.Pow(1f - x, 3f);
+    }
+
+    private static float EaseInCubic(float x)
+    {
+        return x * x * x;
     }
 }

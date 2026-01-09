@@ -1503,6 +1503,9 @@ MonoBehaviour:
   bestScoreText: {fileID: 2045234416}
   pausePanel: {fileID: 84695243}
   deliveryToastUI: {fileID: 2046471866}
+  packagesPunch: {fileID: 1909264581}
+  orderPunch: {fileID: 1440237974}
+  moneyPunch: {fileID: 1420462535}
   scorePerSecond: 5
   orderTarget: 3
   rewardMoney: 50
@@ -2901,6 +2904,7 @@ GameObject:
   - component: {fileID: 1420462532}
   - component: {fileID: 1420462534}
   - component: {fileID: 1420462533}
+  - component: {fileID: 1420462535}
   m_Layer: 5
   m_Name: MoneyText
   m_TagString: Untagged
@@ -3024,6 +3028,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1420462531}
   m_CullTransparentMesh: 1
+--- !u!114 &1420462535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1420462531}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72f4911785c808648941e972034c48bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
+  upScale: 1.08
+  upTime: 0.06
+  downTime: 0.1
 --- !u!1 &1432233025
 GameObject:
   m_ObjectHideFlags: 0
@@ -3217,6 +3237,7 @@ GameObject:
   - component: {fileID: 1440237971}
   - component: {fileID: 1440237972}
   - component: {fileID: 1440237973}
+  - component: {fileID: 1440237974}
   m_Layer: 5
   m_Name: OrderText
   m_TagString: Untagged
@@ -3340,6 +3361,22 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &1440237974
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1440237970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72f4911785c808648941e972034c48bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
+  upScale: 1.08
+  upTime: 0.06
+  downTime: 0.1
 --- !u!1 &1565276557
 GameObject:
   m_ObjectHideFlags: 0
@@ -3351,6 +3388,7 @@ GameObject:
   - component: {fileID: 1565276560}
   - component: {fileID: 1565276559}
   - component: {fileID: 1565276558}
+  - component: {fileID: 1565276561}
   m_Layer: 5
   m_Name: ScoreText
   m_TagString: Untagged
@@ -3474,6 +3512,22 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
+--- !u!114 &1565276561
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1565276557}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72f4911785c808648941e972034c48bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
+  upScale: 1.08
+  upTime: 0.06
+  downTime: 0.1
 --- !u!1 &1653104516
 GameObject:
   m_ObjectHideFlags: 0
@@ -4019,7 +4073,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -4332,6 +4386,7 @@ GameObject:
   - component: {fileID: 1909264578}
   - component: {fileID: 1909264580}
   - component: {fileID: 1909264579}
+  - component: {fileID: 1909264581}
   m_Layer: 5
   m_Name: PackagesText
   m_TagString: Untagged
@@ -4455,6 +4510,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1909264577}
   m_CullTransparentMesh: 1
+--- !u!114 &1909264581
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1909264577}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72f4911785c808648941e972034c48bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
+  upScale: 1.08
+  upTime: 0.06
+  downTime: 0.1
 --- !u!1 &1963355728
 GameObject:
   m_ObjectHideFlags: 0
@@ -4958,16 +5029,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8af9022705c0ef439b704ea06cfa6df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canvasGroup: {fileID: 2046471863}
   panel: {fileID: 2046471861}
-  group: {fileID: 2046471863}
-  text: {fileID: 431656283}
-  fadeIn: 0.12
-  hold: 0.55
-  fadeOut: 0.18
+  label: {fileID: 431656283}
+  enterDuration: 0.12
+  stayDuration: 0.9
+  exitDuration: 0.18
+  hiddenOffset: {x: 0, y: 40}
   startScale: 0.92
-  endScale: 1
-  startYOffset: 10
-  endYOffset: 0
 --- !u!1 &2051257354
 GameObject:
   m_ObjectHideFlags: 0
