@@ -3,14 +3,16 @@ using UnityEngine;
 
 public class PlayerPopFeedback : MonoBehaviour
 {
-    [SerializeField] private Transform target;
+    [Header("Target")]
+    [SerializeField] private Transform target;   // что "попаем" (например, модель игрока или весь Player)
 
     [Header("Pop")]
-    [SerializeField] private float duration = 0.10f;
-    [SerializeField] private float scaleUp = 1.08f;
+    [SerializeField] private float popScale = 1.07f;
+    [SerializeField] private float popIn = 0.06f;
+    [SerializeField] private float popOut = 0.10f;
 
-    private Coroutine _routine;
     private Vector3 _baseScale;
+    private Coroutine _routine;
 
     private void Awake()
     {
@@ -18,37 +20,47 @@ public class PlayerPopFeedback : MonoBehaviour
         _baseScale = target.localScale;
     }
 
-    public void Pop()
+    public void Play()
     {
-        if (_routine != null) StopCoroutine(_routine);
+        if (_routine != null)
+            StopCoroutine(_routine);
+
         _routine = StartCoroutine(PopRoutine());
     }
 
     private IEnumerator PopRoutine()
     {
-        float half = Mathf.Max(0.01f, duration * 0.5f);
-
-        // up
+        // In
         float t = 0f;
-        while (t < half)
+        Vector3 from = _baseScale;
+        Vector3 to = _baseScale * popScale;
+
+        while (t < popIn)
         {
             t += Time.unscaledDeltaTime;
-            float k = Mathf.Clamp01(t / half);
-            target.localScale = Vector3.Lerp(_baseScale, _baseScale * scaleUp, k);
+            float k = Mathf.Clamp01(t / popIn);
+            target.localScale = Vector3.Lerp(from, to, EaseOut(k));
             yield return null;
         }
+        target.localScale = to;
 
-        // down
+        // Out
         t = 0f;
-        while (t < half)
+        while (t < popOut)
         {
             t += Time.unscaledDeltaTime;
-            float k = Mathf.Clamp01(t / half);
-            target.localScale = Vector3.Lerp(_baseScale * scaleUp, _baseScale, k);
+            float k = Mathf.Clamp01(t / popOut);
+            target.localScale = Vector3.Lerp(to, _baseScale, EaseOut(k));
             yield return null;
         }
 
         target.localScale = _baseScale;
         _routine = null;
+    }
+
+    private static float EaseOut(float x)
+    {
+        // квадратичная easeOut
+        return 1f - (1f - x) * (1f - x);
     }
 }

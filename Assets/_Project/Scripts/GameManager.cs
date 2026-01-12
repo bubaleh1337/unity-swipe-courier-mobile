@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject pausePanel;
 
     [Header("UI - Delivery Toast")]
-    [SerializeField] private DeliveryToastUI deliveryToastUI;
+    [SerializeField] private DeliveryToastAnimator deliveryToast;
 
     [Header("UI - Feedback (punch)")]
     [SerializeField] private UIPunch packagesPunch;
@@ -43,6 +43,9 @@ public class GameManager : MonoBehaviour
     [Header("VFX")]
     [SerializeField] private Transform playerVfxAnchor; // можно не задавать, будет позиция игрока по умолчанию
 
+    [Header("Feedback")]
+    [SerializeField] private PlayerPopFeedback pickupPop;
+
     private float _timeLeft;
     private bool _ended;
 
@@ -51,9 +54,9 @@ public class GameManager : MonoBehaviour
     private int _score;
     private float _scoreAcc;
 
-    private int _packages;         // сколько пакетов подняли в текущей попытке (для HUD)
-    private int _money;            // деньги (пока только в рантайме)
-    private int _orderCollected;   // сколько пакетов собрано в текущем заказе
+    private int _packages;
+    private int _money;
+    private int _orderCollected;
 
     private int _bestScore;
 
@@ -72,7 +75,7 @@ public class GameManager : MonoBehaviour
 
         if (resultPanel != null) resultPanel.SetActive(false);
         if (pausePanel != null) pausePanel.SetActive(false);
-        if (deliveryToastUI != null) deliveryToastUI.HideImmediate();
+        // DeliveryToastAnimator сам управляет активностью
 
         _score = 0;
         _scoreAcc = 0f;
@@ -88,9 +91,6 @@ public class GameManager : MonoBehaviour
         UpdateEconomyUI();
         UpdateOrderUI();
         UpdateBestUI();
-        if (deliveryToastUI != null)
-            deliveryToastUI.HideImmediate();
-
     }
 
     private void Update()
@@ -105,7 +105,6 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        // таймер
         _timeLeft -= Time.deltaTime;
         if (_timeLeft <= 0f)
         {
@@ -114,7 +113,6 @@ public class GameManager : MonoBehaviour
         }
         UpdateTimerUI();
 
-        // скор (плавно)
         _scoreAcc += scorePerSecond * Time.deltaTime;
         int newScore = Mathf.FloorToInt(_scoreAcc);
         if (newScore != _score)
@@ -179,7 +177,6 @@ public class GameManager : MonoBehaviour
 
     private void ShowResult(string title)
     {
-        // обновим best
         if (_score > _bestScore)
         {
             _bestScore = _score;
@@ -212,7 +209,6 @@ public class GameManager : MonoBehaviour
         OnPackageCollected(Vector3.zero);
     }
 
-    // вызывать при подборе одного Package
     public void OnPackageCollected(Vector3 pickupWorldPos)
     {
         if (_ended) return;
@@ -221,17 +217,17 @@ public class GameManager : MonoBehaviour
         _packages++;
         _orderCollected++;
 
+        if (pickupPop != null)
+            pickupPop.Play();
+
         UpdateEconomyUI();
         UpdateOrderUI();
 
-        // POP feedback on pickup
         if (packagesPunch != null) packagesPunch.Punch();
         if (orderPunch != null) orderPunch.Punch();
 
-        // SFX pickup
         if (AudioManager.Instance != null) AudioManager.Instance.PlayPickup();
 
-        // VFX pickup (если позиция не задана — покажем у игрока)
         if (VfxPool.Instance != null)
         {
             Vector3 pos = pickupWorldPos;
@@ -239,7 +235,6 @@ public class GameManager : MonoBehaviour
             VfxPool.Instance.SpawnPickup(pos);
         }
 
-        // если заказ выполнен
         if (_orderCollected >= orderTarget)
         {
             _orderCollected = 0;
@@ -248,25 +243,21 @@ public class GameManager : MonoBehaviour
             UpdateEconomyUI();
             UpdateOrderUI();
 
+
+            ShowDeliveryToast($"+${rewardMoney} Delivery Complete!");
+
             if (moneyPunch != null) moneyPunch.Punch();
 
-            // SFX delivery
             if (AudioManager.Instance != null) AudioManager.Instance.PlayDelivery();
 
-            // VFX delivery — лучше у игрока
             if (VfxPool.Instance != null)
             {
                 Vector3 p = (playerVfxAnchor != null) ? playerVfxAnchor.position : Vector3.zero;
-                if (p == Vector3.zero) p = Vector3.up; // fallback, чтобы не улетело в NaN
+                if (p == Vector3.zero) p = Vector3.up;
                 VfxPool.Instance.SpawnDelivery(p);
             }
-
-            // Animated toast
-            if (deliveryToastUI != null)
-                deliveryToastUI.Show($"+${rewardMoney} DELIVERY COMPLETE");
         }
     }
-
 
     // =========================
     // Pause
@@ -293,5 +284,11 @@ public class GameManager : MonoBehaviour
 
         if (pausePanel != null)
             pausePanel.SetActive(false);
+    }
+
+    private void ShowDeliveryToast(string message)
+    {
+        if (deliveryToast == null) return;
+        deliveryToast.Show(message);
     }
 }

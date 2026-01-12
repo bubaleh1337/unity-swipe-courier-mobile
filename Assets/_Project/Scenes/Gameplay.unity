@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 165bde6ef881a3c409e2c1c6d0c234fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sfxSource: {fileID: 0}
+  sfxSource: {fileID: 51986515}
   pickupClip: {fileID: 8300000, guid: 2540a595d5712144bb5ef3ababba1165, type: 3}
   deliveryClip: {fileID: 8300000, guid: 30d49d8826e1626468793b68321c07fe, type: 3}
   loseClip: {fileID: 8300000, guid: f8b2e6b5ab717f44196c401f1c6ff184, type: 3}
@@ -1537,7 +1537,7 @@ MonoBehaviour:
   finalScoreText: {fileID: 423505471}
   bestScoreText: {fileID: 2045234416}
   pausePanel: {fileID: 84695243}
-  deliveryToastUI: {fileID: 2046471866}
+  deliveryToast: {fileID: 2046471867}
   packagesPunch: {fileID: 1909264581}
   orderPunch: {fileID: 1440237974}
   moneyPunch: {fileID: 1420462535}
@@ -1545,6 +1545,7 @@ MonoBehaviour:
   orderTarget: 3
   rewardMoney: 50
   playerVfxAnchor: {fileID: 0}
+  pickupPop: {fileID: 0}
 --- !u!4 &531137923
 Transform:
   m_ObjectHideFlags: 0
@@ -1765,8 +1766,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 541032178}
-  duration: 0.1
-  scaleUp: 1.08
+  popScale: 1.07
+  popIn: 0.06
+  popOut: 0.1
 --- !u!1 &614897982
 GameObject:
   m_ObjectHideFlags: 0
@@ -4982,7 +4984,7 @@ GameObject:
   - component: {fileID: 2046471863}
   - component: {fileID: 2046471865}
   - component: {fileID: 2046471864}
-  - component: {fileID: 2046471866}
+  - component: {fileID: 2046471867}
   m_Layer: 5
   m_Name: DeliveryToast
   m_TagString: Untagged
@@ -5061,7 +5063,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0.3137255, a: 0.49803922}
+  m_Color: {r: 0.06666667, g: 0.09411765, b: 0.15294118, a: 0.49803922}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -5086,7 +5088,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2046471860}
   m_CullTransparentMesh: 1
---- !u!114 &2046471866
+--- !u!114 &2046471867
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5095,17 +5097,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 2046471860}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8af9022705c0ef439b704ea06cfa6df, type: 3}
+  m_Script: {fileID: 11500000, guid: 3600f7a16a353a848853c4afdac7a5a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  toastRoot: {fileID: 2046471861}
   canvasGroup: {fileID: 2046471863}
-  panel: {fileID: 2046471861}
-  label: {fileID: 431656283}
-  enterDuration: 0.12
-  stayDuration: 0.9
-  exitDuration: 0.18
-  hiddenOffset: {x: 0, y: 40}
-  startScale: 0.92
+  messageText: {fileID: 431656283}
+  enterDuration: 0.18
+  stayDuration: 0.85
+  exitDuration: 0.22
+  offsetY: 26
+  startScale: 0.96
 --- !u!1 &2051257354
 GameObject:
   m_ObjectHideFlags: 0
