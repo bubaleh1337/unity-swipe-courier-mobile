@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.VFX;
 
 public class GameManager : MonoBehaviour
 {
@@ -38,6 +39,9 @@ public class GameManager : MonoBehaviour
     [Header("Order / Delivery")]
     [SerializeField] private int orderTarget = 3;      // сколько пакетов нужно дл€ УдоставкиФ
     [SerializeField] private int rewardMoney = 50;     // награда за доставку
+
+    [Header("VFX")]
+    [SerializeField] private Transform playerVfxAnchor; // можно не задавать, будет позици€ игрока по умолчанию
 
     private float _timeLeft;
     private bool _ended;
@@ -162,6 +166,7 @@ public class GameManager : MonoBehaviour
     {
         if (_ended) return;
         _ended = true;
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayLose();
         ShowResult("YOU LOSE");
     }
 
@@ -204,6 +209,12 @@ public class GameManager : MonoBehaviour
     // =========================
     public void OnPackageCollected()
     {
+        OnPackageCollected(Vector3.zero);
+    }
+
+    // вызывать при подборе одного Package
+    public void OnPackageCollected(Vector3 pickupWorldPos)
+    {
         if (_ended) return;
         if (!IsRunning) return;
 
@@ -217,19 +228,40 @@ public class GameManager : MonoBehaviour
         if (packagesPunch != null) packagesPunch.Punch();
         if (orderPunch != null) orderPunch.Punch();
 
+        // SFX pickup
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayPickup();
+
+        // VFX pickup (если позици€ не задана Ч покажем у игрока)
+        if (VfxPool.Instance != null)
+        {
+            Vector3 pos = pickupWorldPos;
+            if (pos == Vector3.zero && playerVfxAnchor != null) pos = playerVfxAnchor.position;
+            VfxPool.Instance.SpawnPickup(pos);
+        }
+
         // если заказ выполнен
         if (_orderCollected >= orderTarget)
         {
-            _orderCollected = 0;     // новый заказ
+            _orderCollected = 0;
             _money += rewardMoney;
 
             UpdateEconomyUI();
             UpdateOrderUI();
 
-            // POP feedback on reward
             if (moneyPunch != null) moneyPunch.Punch();
 
-            // Animated toast (unscaled)
+            // SFX delivery
+            if (AudioManager.Instance != null) AudioManager.Instance.PlayDelivery();
+
+            // VFX delivery Ч лучше у игрока
+            if (VfxPool.Instance != null)
+            {
+                Vector3 p = (playerVfxAnchor != null) ? playerVfxAnchor.position : Vector3.zero;
+                if (p == Vector3.zero) p = Vector3.up; // fallback, чтобы не улетело в NaN
+                VfxPool.Instance.SpawnDelivery(p);
+            }
+
+            // Animated toast
             if (deliveryToastUI != null)
                 deliveryToastUI.Show($"+${rewardMoney} DELIVERY COMPLETE");
         }
