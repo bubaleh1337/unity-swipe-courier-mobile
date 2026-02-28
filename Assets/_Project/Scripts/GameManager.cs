@@ -40,6 +40,7 @@ public class GameManager : MonoBehaviour
     [Header("Order / Delivery")]
     [SerializeField] private int orderTarget = 3;      // сколько пакетов нужно для “доставки”
     [SerializeField] private int rewardMoney = 50;     // награда за доставку
+    [SerializeField] private CourierBoxStack courierBoxStack;
 
     [Header("VFX")]
     [SerializeField] private Transform playerVfxAnchor; // можно не задавать, будет позиция игрока по умолчанию
@@ -87,6 +88,7 @@ public class GameManager : MonoBehaviour
         _packages = 0;
         _money = 0;
         _orderCollected = 0;
+        if (courierBoxStack != null) courierBoxStack.Clear();
 
         _bestScore = PlayerPrefs.GetInt("BEST_SCORE", 0);
 
@@ -226,6 +228,7 @@ public class GameManager : MonoBehaviour
 
         _packages++;
         _orderCollected++;
+        if (courierBoxStack != null) courierBoxStack.SetCount(_orderCollected);
 
         if (courierVisual != null)
             courierVisual.OnPackagePicked();
@@ -251,6 +254,7 @@ public class GameManager : MonoBehaviour
         if (_orderCollected >= orderTarget)
         {
             _orderCollected = 0;
+            if (courierBoxStack != null) courierBoxStack.Clear();
             _money += rewardMoney;
 
             UpdateEconomyUI();
