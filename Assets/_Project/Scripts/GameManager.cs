@@ -46,6 +46,9 @@ public class GameManager : MonoBehaviour
     [Header("Feedback")]
     [SerializeField] private PlayerPopFeedback pickupPop;
 
+    [Header("Courier Visual")]
+    [SerializeField] private CourierVisual courierVisual;
+
     private float _timeLeft;
     private bool _ended;
 
@@ -91,6 +94,9 @@ public class GameManager : MonoBehaviour
         UpdateEconomyUI();
         UpdateOrderUI();
         UpdateBestUI();
+
+        if (courierVisual != null)
+            courierVisual.ResetVisual();
     }
 
     private void Update()
@@ -217,6 +223,9 @@ public class GameManager : MonoBehaviour
         _packages++;
         _orderCollected++;
 
+        if (courierVisual != null)
+            courierVisual.OnPackagePicked();
+
         if (pickupPop != null)
             pickupPop.Play();
 
@@ -245,6 +254,9 @@ public class GameManager : MonoBehaviour
 
 
             ShowDeliveryToast($"+${rewardMoney} Delivery Complete!");
+
+            if (courierVisual != null)
+                courierVisual.OnDeliveryComplete();
 
             if (moneyPunch != null) moneyPunch.Punch();
 
@@ -291,4 +303,35 @@ public class GameManager : MonoBehaviour
         if (deliveryToast == null) return;
         deliveryToast.Show(message);
     }
+
+    public void TryCompleteDeliveryAtZone()
+    {
+        if (_ended) return;
+        if (!IsRunning) return;
+
+        // доставку можно делать только если собрали нужное
+        if (_orderCollected < orderTarget) return;
+
+        _orderCollected = 0;
+        _money += rewardMoney;
+
+        UpdateEconomyUI();
+        UpdateOrderUI();
+
+        ShowDeliveryToast($"+${rewardMoney} Delivery Complete!");
+
+        if (courierVisual != null)
+            courierVisual.OnDeliveryComplete();
+
+        if (moneyPunch != null) moneyPunch.Punch();
+
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayDelivery();
+
+        if (VfxPool.Instance != null)
+        {
+            Vector3 p = (playerVfxAnchor != null) ? playerVfxAnchor.position : Vector3.up;
+            VfxPool.Instance.SpawnDelivery(p);
+        }
+    }
+
 }
