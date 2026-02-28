@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TMP_Text resultTitle;
     [SerializeField] private TMP_Text finalScoreText;  // ResultPanel "Score: X"
     [SerializeField] private TMP_Text bestScoreText;   // ResultPanel "Best: X"
+    [SerializeField] private TMP_Text finalMoneyText; // ResultPanel "Money: X"
 
     [Header("UI - Pause")]
     [SerializeField] private GameObject pausePanel;
@@ -142,6 +143,7 @@ public class GameManager : MonoBehaviour
     {
         if (scoreText != null) scoreText.text = $"Score: {_score}";
         if (finalScoreText != null) finalScoreText.text = $"Score: {_score}";
+        if (finalMoneyText != null) finalMoneyText.text = $"Money: {_money}";
     }
 
     private void UpdateBestUI()
@@ -190,6 +192,8 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.Save();
         }
         UpdateBestUI();
+        UpdateScoreUI();    
+        UpdateEconomyUI();  
 
         Time.timeScale = 0f;
 
