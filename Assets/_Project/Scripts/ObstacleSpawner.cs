@@ -5,9 +5,14 @@ public class ObstacleSpawner : MonoBehaviour
     [Header("Pool")]
     [SerializeField] private ObstaclePool pool;
 
+    [Header("Road (for perfect centering)")]
+    [SerializeField] private BoxCollider roadCollider;
+    [SerializeField] private float edgePadding = 0.6f; // отступ от бортиков
+
     [Header("Lanes")]
-    [SerializeField] private float laneOffset = 2f;
+    [SerializeField] private float laneOffset = 2f;   // можно оставить, если roadCollider не задан
     [SerializeField] private int laneCount = 3;
+
 
     [Header("Spawn")]
     [SerializeField] private float spawnZ = 18f;
@@ -18,9 +23,6 @@ public class ObstacleSpawner : MonoBehaviour
     [SerializeField] private float obstacleSpeed = 10f;
 
     [Header("Difficulty")]
-    //[SerializeField] private float minSpawnInterval = 0.55f;
-    //[SerializeField] private float maxObstacleSpeed = 16f;
-    //[SerializeField] private float difficultyRamp = 0.03f;
     [SerializeField] private DifficultyController difficulty;
 
 
@@ -46,7 +48,7 @@ public class ObstacleSpawner : MonoBehaviour
 
     private void Update()
     {
-        if (pool == null) return; // <- теперь проверяем pool
+        if (pool == null) return;
         if (_gm != null && !_gm.IsRunning) return;
 
         // Плавно усложняем игру со временем
@@ -85,17 +87,39 @@ public class ObstacleSpawner : MonoBehaviour
 
         _lastLane = laneIndex;
 
-        // 2) посчитать X по полосам
-        int centerIndex = (laneCount - 1) / 2; // для 3 полос = 1
-        float x = (laneIndex - centerIndex) * laneOffset;
-
-        // 3) взять объект из пула
-        Vector3 pos = new Vector3(x, 0.5f, spawnZ);
+        // 2) взять объект из пула
         var mover = pool.Get();
-        mover.transform.position = pos;
-        mover.transform.rotation = Quaternion.identity;
+        if (mover == null) return;
 
-        // 4) инициализировать скорость и привязку к пулу
+        // 3) посчитать X/Y
+        float x;
+        float y;
+
+        if (roadCollider != null)
+        {
+            var b = roadCollider.bounds;
+            float left = b.min.x + edgePadding;
+            float right = b.max.x - edgePadding;
+
+            float laneWidth = (right - left) / laneCount;
+            x = left + laneWidth * (laneIndex + 0.5f);
+
+            // Y = верх дороги + половина высоты препятствия
+            y = b.max.y;
+            var col = mover.GetComponentInChildren<Collider>();
+            if (col != null) y += col.bounds.extents.y;
+        }
+        else
+        {
+            // fallback (как раньше)
+            int centerIndex = (laneCount - 1) / 2;
+            x = (laneIndex - centerIndex) * laneOffset;
+            y = 0.5f;
+        }
+
+        // 4) поставить и запустить 
+        mover.transform.position = new Vector3(x, y, spawnZ);
+        mover.transform.rotation = Quaternion.identity;
         mover.Init(pool, obstacleSpeed);
     }
 }
